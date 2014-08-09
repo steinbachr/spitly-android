@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- App Variables -->
     <string name="app_name">Spitly</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Placeholders -->
+    <string name="placeholder_message">Spit your game here</string>
+
+    <!-- Buttons -->
+    <string name="btn_create">Create</string>
+
+    <!-- Labels -->
+    <string name="lbl_title">Schedule a Message</string>
+    <string name="lbl_send_to">Send to</string>
+    <string name="lbl_send_in">Send in</string>
+
+    <!-- Spinner Choices -->
+    <string-array name="spinner_times">
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+    </string-array>
+
+    <string-array name="spinner_time_types">
+        <item>Seconds</item>
+        <item>Minutes</item>
+        <item>Hours</item>
+    </string-array>
 </resources>
