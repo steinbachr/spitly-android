@@ -21,7 +21,7 @@
         android:lines="8"
         android:minLines="6"
         android:hint="@string/placeholder_message"
-        android:id="@+id/editText"
+        android:id="@+id/message"
         android:layout_gravity="center_horizontal"
         />
 
