@@ -30,11 +30,6 @@ public class FragmentSendText extends Fragment {
         return rootView;
     }
 
-    public void scheduleMessage(View v) {
-        String message = ((TextView)this.a.findViewById(R.id.message)).getText().toString();
-        Messaging.sendMessage("15182818509", message);
-    }
-
     /**-- Helpers --**/
     private void createSpinners(View rootView) {
         Spinner timeSpinner = (Spinner)rootView.findViewById(R.id.time_spinner);
