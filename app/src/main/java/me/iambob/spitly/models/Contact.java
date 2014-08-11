@@ -1,5 +1,7 @@
 package me.iambob.spitly.models;
 
+import java.util.Comparator;
+
 public class Contact {
     private String contactId;
     private boolean isStarred;
@@ -54,5 +56,11 @@ public class Contact {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+
+    /**-- Overrides --**/
+    public String toString() {
+        return this.getName();
     }
 }
