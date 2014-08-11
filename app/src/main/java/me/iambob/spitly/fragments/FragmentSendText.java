@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.iambob.spitly.R;
-import me.iambob.spitly.utils.Messaging;
 
 
 public class FragmentSendText extends Fragment {

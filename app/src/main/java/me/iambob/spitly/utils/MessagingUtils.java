@@ -5,7 +5,7 @@ import android.telephony.SmsManager;
 /**
  * provides methods for sending / receiving messages
  */
-public class Messaging {
+public class MessagingUtils {
     /**
      * Send a given message to the specified address
      * @param destinationAddr - the destination of the message to be sent
