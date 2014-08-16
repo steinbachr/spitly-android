@@ -1,18 +1,22 @@
 package me.iambob.spitly.activities;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.widget.Toast;
 import android.os.Bundle;
 import android.view.View;
+import android.view.LayoutInflater;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+import android.content.DialogInterface;
 
 import me.iambob.spitly.R;
 import me.iambob.spitly.utils.ContactsUtils;
 import me.iambob.spitly.utils.MessagingUtils;
-import me.iambob.spitly.utils.GeneralUtils;
 import me.iambob.spitly.models.Contact;
 
 import java.util.ArrayList;
@@ -25,14 +29,26 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+/** when the user chooses 'close' after sending a text, we actually want to finish the entire application */
+interface ChooseNextActionDialogListener {
+    public void onCloseClick(DialogInterface dialog);
+}
 
-public class SendTextActivity extends WaitForContactsActivity {
+public class SendTextActivity extends WaitForContactsActivity implements ChooseNextActionDialogListener {
     Contact selectedContact;
     int selectedTime;
     String selectedTimeType;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**-- Helpers --**/
+    /**
+     * display the dialog which allows the user to either create a new text or to close the application
+     */
+    private void showChooseNextActionDialog() {
+        DialogFragment newFragment = new ChooseNextActionDialog();
+        newFragment.show(getFragmentManager(), "actionDialog");
+    }
+
     /**
      * send out the message typed by the user after the chosen delay period
      * @param message the message to send after the chosen delay
@@ -60,6 +76,7 @@ public class SendTextActivity extends WaitForContactsActivity {
         scheduler.schedule(sendText, selectedTime, timeUnit);
 
         Toast.makeText(this, String.format("Text will go out in T-minus %d %s", selectedTime, selectedTimeType), Toast.LENGTH_LONG).show();
+        this.showChooseNextActionDialog();
     }
 
     private void createSpinners() {
@@ -102,7 +119,12 @@ public class SendTextActivity extends WaitForContactsActivity {
     /**-- WaitForContactsActivity Overrides --**/
 
     public void onContactsLoaded(ArrayList<Contact> loadedContacts) {
-        Collections.sort(loadedContacts, new ContactComparator());
+        Collections.sort(loadedContacts, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact o1, Contact o2) {
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+            }
+        });
 
         Spinner contactsSpinner = (Spinner)findViewById(R.id.contacts_spinner);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, loadedContacts);
@@ -116,16 +138,13 @@ public class SendTextActivity extends WaitForContactsActivity {
         }
     }
 
-    /**-- Comparator for Comparing Contacts --**/
-
-    class ContactComparator implements Comparator<Contact> {
-        /**-- Comparator Overrides --**/
-        @Override
-        public int compare(Contact o1, Contact o2) {
-            return o1.getName().compareTo(o2.getName());
-        }
+    /**-- DialogInterface Overrides --**/
+    public void onCloseClick(DialogInterface diag) {
+        this.finish();
     }
 
+
+    /****---- Listeners -----****/
     /**-- Contact Selected Listener --**/
 
     class ContactSelectedListener implements AdapterView.OnItemSelectedListener {
@@ -159,6 +178,38 @@ public class SendTextActivity extends WaitForContactsActivity {
         }
 
         public void onNothingSelected(AdapterView<?> parent) {
+        }
+    }
+
+    /*****----- Dialogs ------*****/
+    public static class ChooseNextActionDialog extends DialogFragment {
+        ChooseNextActionDialogListener listener;
+
+        // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            listener = (ChooseNextActionDialogListener) activity;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setPositiveButton(R.string.dlg_text_sent_send_another, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            /* dont actually have to do anything here */
+                        }
+                    })
+                    .setNegativeButton(R.string.dlg_text_sent_close, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            listener.onCloseClick(dialog);
+                        }
+                    });
+
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            builder.setView(inflater.inflate(R.layout.dialog_next_action, null));
+
+            return builder.create();
         }
     }
 }

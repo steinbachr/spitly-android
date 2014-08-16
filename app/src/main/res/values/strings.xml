@@ -15,6 +15,11 @@
     <string name="lbl_send_to">Send to</string>
     <string name="lbl_send_in">Send in</string>
 
+    <!-- Dialogs -->
+    <string name="dlg_text_sent_title">Now What?</string>
+    <string name="dlg_text_sent_close">All Done</string>
+    <string name="dlg_text_sent_send_another">Send Another</string>
+
     <!-- Ids -->
     <string name="id_send_text_notif">100</string>
 
