@@ -1,8 +1,24 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
         <!-- Customize your theme here. -->
+        <item name="android:textColor">@color/lightgreen</item>
+    </style>
+
+    <!-- Fonts -->
+    <style name="SpitlyFont">
+        <item name="android:textColor">@color/lightgreen</item>
+    </style>
+
+    <style name="SpitlyFont.Big">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- Buttons -->
+    <style name="SpitlyButton">
+        <item name="android:background">@drawable/spitly_button</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>
