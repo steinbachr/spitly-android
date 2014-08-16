@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import me.iambob.spitly.R;
 import me.iambob.spitly.utils.ContactsUtils;
 import me.iambob.spitly.utils.MessagingUtils;
+import me.iambob.spitly.utils.GeneralUtils;
 import me.iambob.spitly.models.Contact;
 
 import java.util.ArrayList;
@@ -37,9 +38,14 @@ public class SendTextActivity extends WaitForContactsActivity {
      * @param message the message to send after the chosen delay
      */
     private void sendMessageAfterDelay(final String message) {
+        final Activity enclosing = this;
+
         final Runnable sendText = new Runnable() {
             public void run() {
-                MessagingUtils.sendMessage(selectedContact.getNumber(), message);
+                boolean messageSent = MessagingUtils.sendMessage(selectedContact.getNumber(), message);
+                if (messageSent) {
+                    MessagingUtils.createTextSentNotifation(enclosing, selectedContact);
+                }
             }
         };
 

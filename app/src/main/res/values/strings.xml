@@ -15,6 +15,9 @@
     <string name="lbl_send_to">Send to</string>
     <string name="lbl_send_in">Send in</string>
 
+    <!-- Ids -->
+    <string name="id_send_text_notif">100</string>
+
     <!-- Spinner Choices -->
     <string-array name="spinner_times">
         <item>1</item>

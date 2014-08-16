@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.os.Build;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import me.iambob.spitly.activities.WaitForContactsActivity;
 import me.iambob.spitly.models.Contact;
 import me.iambob.spitly.database.Database;
+import me.iambob.spitly.utils.GeneralUtils;
 
 
 public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -61,12 +63,12 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
         int keyIndex = cursor.getColumnIndex(Contacts.LOOKUP_KEY);
         int nameIndex = cursor.getColumnIndex(this.NAME);
         int numberIndex = cursor.getColumnIndex(Phone.NUMBER);
-        int phoneTypeIndex = cursor.getColumnIndex(Phone.NUMBER);
+        int phoneTypeIndex = cursor.getColumnIndex(Phone.TYPE);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             int phoneType = cursor.getInt(phoneTypeIndex);
-            if (phoneType > NOT_A_PHONE) {
+            if (phoneType != NOT_A_PHONE) {
                 fetchedContacts.add(new Contact(cursor.getString(keyIndex), cursor.getString(nameIndex), cursor.getString(numberIndex)));
             }
             cursor.moveToNext();
