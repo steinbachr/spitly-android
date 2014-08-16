@@ -1,6 +1,7 @@
 package me.iambob.spitly.activities;
 
 import android.app.Activity;
+import android.widget.Toast;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -51,6 +52,8 @@ public class SendTextActivity extends WaitForContactsActivity {
             timeUnit = TimeUnit.HOURS;
         }
         scheduler.schedule(sendText, selectedTime, timeUnit);
+
+        Toast.makeText(this, String.format("Text will go out in T-minus %d %s", selectedTime, selectedTimeType), Toast.LENGTH_LONG).show();
     }
 
     private void createSpinners() {
