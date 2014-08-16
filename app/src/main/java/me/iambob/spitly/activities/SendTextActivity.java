@@ -128,7 +128,7 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
             }
         });
 
-        ArrayAdapter<Contact> adapter = new ArrayAdapter<Contact>(this, android.R.layout.simple_spinner_item, loadedContacts);
+        ArrayAdapter<Contact> adapter = new ArrayAdapter<Contact>(this, R.layout.contact_autocomplete_item, loadedContacts);
         AutoCompleteTextView contactsAutocomplete = (AutoCompleteTextView)findViewById(R.id.contacts_autocomplete);
 
         contactsAutocomplete.setAdapter(adapter);
