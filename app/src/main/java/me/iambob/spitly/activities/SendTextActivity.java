@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.widget.Adapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import android.os.Bundle;
 import android.view.View;
@@ -126,10 +128,12 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
             }
         });
 
-        Spinner contactsSpinner = (Spinner)findViewById(R.id.contacts_spinner);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, loadedContacts);
-        contactsSpinner.setAdapter(adapter);
-        contactsSpinner.setOnItemSelectedListener(new ContactSelectedListener());
+        ArrayAdapter<Contact> adapter = new ArrayAdapter<Contact>(this, android.R.layout.simple_spinner_item, loadedContacts);
+        AutoCompleteTextView contactsAutocomplete = (AutoCompleteTextView)findViewById(R.id.contacts_autocomplete);
+
+        contactsAutocomplete.setAdapter(adapter);
+        contactsAutocomplete.setOnItemSelectedListener(new ContactSelectedListener());
+        contactsAutocomplete.setOnItemClickListener(new ContactSelectedListener());
 
         try {
             selectedContact = loadedContacts.get(0);
@@ -147,9 +151,12 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
     /****---- Listeners -----****/
     /**-- Contact Selected Listener --**/
 
-    class ContactSelectedListener implements AdapterView.OnItemSelectedListener {
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int pos, long id) {
+    class ContactSelectedListener implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            selectedContact = (Contact)parent.getItemAtPosition(pos);
+        }
+
+        public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
             selectedContact = (Contact)parent.getItemAtPosition(pos);
         }
 
@@ -196,10 +203,10 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setPositiveButton(R.string.dlg_text_sent_send_another, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                public void onClick(DialogInterface dialog, int id) {
                             /* dont actually have to do anything here */
-                        }
-                    })
+                }
+            })
                     .setNegativeButton(R.string.dlg_text_sent_close, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             listener.onCloseClick(dialog);
