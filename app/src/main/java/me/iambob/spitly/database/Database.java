@@ -105,6 +105,23 @@ public class Database {
         }
     }
 
+    /**
+     * get the Contact from the Database having the given name, or null if none found
+     * @param name the name of the contact to get from the database
+     * @return the Contact if found, null otherwise
+     */
+    public Contact getContactByName(String name) {
+        HashMap<String, Contact> dbContacts = getDbContacts();
+
+        for (HashMap.Entry<String, Contact> contact : dbContacts.entrySet()) {
+            if (contact.getValue().getName().equalsIgnoreCase(name)) {
+                return contact.getValue();
+            }
+        }
+
+        return null;
+    }
+
     /**-- TASKS --**/
     /**
      * The AsyncTask in charge of actually performing the insert into the DB

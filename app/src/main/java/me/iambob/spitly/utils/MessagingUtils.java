@@ -19,6 +19,18 @@ import me.iambob.spitly.R;
  * provides methods for sending / receiving messages
  */
 public class MessagingUtils {
+    /**-- Helpers --**/
+    private static void showNotification(String notificationTitle, String notificationMessage, Context context) {
+        Notification.Builder mBuilder = new Notification.Builder(context)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle(notificationTitle)
+                .setContentText(notificationMessage);
+
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(1, mBuilder.build());
+    }
+
+
     /**
      * Send a given message to the specified address
      * @param destinationAddr - the destination of the message to be sent
@@ -41,7 +53,7 @@ public class MessagingUtils {
      * Create the notification to be displayed to the user when there text has actually been sent
      * @param enclosing the activity to be used for context
      */
-    public static void createTextSentNotifation(Activity enclosing, Contact recipient) {
+    public static void createTextSentNotification(Activity enclosing, Contact recipient) {
         Notification.Builder mBuilder = new Notification.Builder(enclosing)
                         .setSmallIcon(R.drawable.icon)
                         .setContentTitle("Text sent!")
@@ -60,5 +72,9 @@ public class MessagingUtils {
         // mId allows you to update the notification later on.
         int notifId = Integer.parseInt(enclosing.getResources().getString(R.string.id_send_text_notif));
         mNotificationManager.notify(notifId, mBuilder.build());
+    }
+
+    public static void createReceivedTextNotification(Context context, Contact sender) {
+        showNotification("Received Starred Contact Text!", "click to respond with a delayed text", context);
     }
 }

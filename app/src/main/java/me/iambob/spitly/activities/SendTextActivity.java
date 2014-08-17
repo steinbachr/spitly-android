@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import me.iambob.spitly.R;
 import me.iambob.spitly.utils.ContactsUtils;
 import me.iambob.spitly.utils.MessagingUtils;
+import me.iambob.spitly.utils.GeneralUtils;
 import me.iambob.spitly.models.Contact;
 
 import java.util.ArrayList;
@@ -38,10 +39,13 @@ interface ChooseNextActionDialogListener {
 }
 
 public class SendTextActivity extends WaitForContactsActivity implements ChooseNextActionDialogListener {
+    ArrayList<Contact> loadedContacts;
     Contact selectedContact;
     int selectedTime;
     String selectedTimeType;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    AutoCompleteTextView contactsAutocomplete;
 
     /**-- Helpers --**/
     /**
@@ -63,10 +67,23 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
             public void run() {
                 boolean messageSent = MessagingUtils.sendMessage(selectedContact.getNumber(), message);
                 if (messageSent) {
-                    MessagingUtils.createTextSentNotifation(enclosing, selectedContact);
+                    MessagingUtils.createTextSentNotification(enclosing, selectedContact);
                 }
             }
         };
+
+        if (selectedContact == null) {
+            String autocompleteText = contactsAutocomplete.getText().toString();
+
+            /* it's possible the user never chose a contact by clicking a contact, but rather just finished typing the contact */
+            selectedContact = GeneralUtils.findContactByName(loadedContacts, autocompleteText);
+
+            /* if the selected contact is still null, then show the user an error toast..mmmm error toast  */
+           if (selectedContact == null) {
+               Toast.makeText(this, String.format("%s not found", autocompleteText), Toast.LENGTH_LONG).show();
+               return;
+           }
+        }
 
         TimeUnit timeUnit;
         if (selectedTimeType.equalsIgnoreCase("seconds")) {
@@ -121,7 +138,9 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
 
     /**-- WaitForContactsActivity Overrides --**/
 
-    public void onContactsLoaded(ArrayList<Contact> loadedContacts) {
+    public void onContactsLoaded(ArrayList<Contact> loaded) {
+        loadedContacts = loaded;
+
         Collections.sort(loadedContacts, new Comparator<Contact>() {
             @Override
             public int compare(Contact o1, Contact o2) {
@@ -130,17 +149,11 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
         });
 
         ArrayAdapter<Contact> adapter = new ArrayAdapter<Contact>(this, R.layout.contact_autocomplete_item, loadedContacts);
-        AutoCompleteTextView contactsAutocomplete = (AutoCompleteTextView)findViewById(R.id.contacts_autocomplete);
+        contactsAutocomplete = (AutoCompleteTextView)findViewById(R.id.contacts_autocomplete);
 
         contactsAutocomplete.setAdapter(adapter);
         contactsAutocomplete.setOnItemSelectedListener(new ContactSelectedListener());
         contactsAutocomplete.setOnItemClickListener(new ContactSelectedListener());
-
-        try {
-            selectedContact = loadedContacts.get(0);
-        } catch (IndexOutOfBoundsException exc) {
-            //no contacts loaded for some reason..what a loser
-        }
     }
 
     /**-- DialogInterface Overrides --**/
