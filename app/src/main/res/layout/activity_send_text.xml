@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/lbl_send_to"
+            android:id="@+id/sendToTv"
             android:layout_marginRight="15dp" />
         <AutoCompleteTextView
             android:layout_width="fill_parent"
@@ -38,7 +39,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
+        android:paddingTop="40dp"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
