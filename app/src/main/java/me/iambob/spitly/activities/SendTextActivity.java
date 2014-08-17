@@ -66,7 +66,7 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
             public void run() {
                 boolean messageSent = MessagingUtils.sendMessage(selectedContact.getNumber(), message);
                 if (messageSent) {
-                    MessagingUtils.createTextSentNotifation(enclosing, selectedContact);
+                    MessagingUtils.createTextSentNotification(enclosing, selectedContact);
                 }
             }
         };
