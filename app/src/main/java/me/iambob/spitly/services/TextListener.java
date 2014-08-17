@@ -6,8 +6,6 @@ import android.content.BroadcastReceiver;
 import android.telephony.gsm.SmsMessage;
 import android.os.Bundle;
 
-import java.util.HashMap;
-
 import me.iambob.spitly.database.Database;
 import me.iambob.spitly.utils.MessagingUtils;
 import me.iambob.spitly.models.Contact;
@@ -28,12 +26,13 @@ public class TextListener extends BroadcastReceiver {
                     for (int i = 0 ; i < pdus.length ; i++) {
                         SmsMessage message = SmsMessage.createFromPdu((byte[])pdus[i]);
                         String msgFrom = message.getOriginatingAddress();
-                        Contact receivedFrom = db.getContactByName(msgFrom);
+                        Contact receivedFrom = db.getContactByNumber(msgFrom);
+
                         if (receivedFrom != null && receivedFrom.isStarred()) {
                             MessagingUtils.createReceivedTextNotification(context, receivedFrom);
                         }
                     }
-                }catch(Exception e){
+                } catch(Exception e){
                 }
             }
         }

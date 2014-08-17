@@ -8,6 +8,9 @@ import me.iambob.spitly.database.Database;
 
 
 public class Contact {
+    /**-- Intent Keys --**/
+    public static final String CONTACT_NAME = "contact name";
+
     private String contactId;
     private boolean isStarred;
     private String name;

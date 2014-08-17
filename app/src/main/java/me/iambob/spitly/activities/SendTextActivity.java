@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.content.DialogInterface;
+import android.content.Intent;
 
 import me.iambob.spitly.R;
 import me.iambob.spitly.utils.ContactsUtils;
@@ -153,6 +154,13 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
         contactsAutocomplete.setAdapter(new ContactsAutocompleteAdapter(this, R.layout.contact_autocomplete_item, loadedContacts));
         contactsAutocomplete.setOnItemSelectedListener(new ContactSelectedListener());
         contactsAutocomplete.setOnItemClickListener(new ContactSelectedListener());
+
+        /* see if the launch intent contains the contact name as an extra, if so then we prefill the autocomplete text view */
+        Intent launchIntent = getIntent();
+        String targetContactName = launchIntent.getStringExtra(Contact.CONTACT_NAME);
+        if (targetContactName != null) {
+            contactsAutocomplete.setText(targetContactName);
+        }
     }
 
     /**-- DialogInterface Overrides --**/

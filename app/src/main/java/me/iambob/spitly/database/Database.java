@@ -137,6 +137,23 @@ public class Database {
     }
 
     /**
+     * get the Contact from the Database having the given number, or null if none found
+     * @param number the number of the contact to get from the database
+     * @return the Contact if found, null otherwise
+     */
+    public Contact getContactByNumber(String number) {
+        HashMap<String, Contact> dbContacts = getDbContacts();
+
+        for (HashMap.Entry<String, Contact> contact : dbContacts.entrySet()) {
+            if (contact.getValue().getNumber().equals(number)) {
+                return contact.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * star the given contact
      * @param contact the contact to star
      */
