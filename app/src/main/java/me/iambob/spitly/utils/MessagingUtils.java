@@ -20,14 +20,24 @@ import me.iambob.spitly.R;
  */
 public class MessagingUtils {
     /**-- Helpers --**/
-    private static void showNotification(String notificationTitle, String notificationMessage, Context context) {
+    private static void showNotification(String notificationTitle, String notificationMessage, int notifId, Context context) {
         Notification.Builder mBuilder = new Notification.Builder(context)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.icon)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationMessage);
 
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, mBuilder.build());
+        Intent resultIntent = new Intent(context, SendTextActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+
+        stackBuilder.addParentStack(SendTextActivity.class);
+
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(notifId, mBuilder.build());
     }
 
 
@@ -54,27 +64,15 @@ public class MessagingUtils {
      * @param enclosing the activity to be used for context
      */
     public static void createTextSentNotification(Activity enclosing, Contact recipient) {
-        Notification.Builder mBuilder = new Notification.Builder(enclosing)
-                        .setSmallIcon(R.drawable.icon)
-                        .setContentTitle("Text sent!")
-                        .setContentText(String.format("Your delayed text to %s has been sent.", recipient.getName()));
-        Intent resultIntent = new Intent(enclosing, SendTextActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(enclosing);
-
-        stackBuilder.addParentStack(SendTextActivity.class);
-
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager = (NotificationManager)enclosing.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // mId allows you to update the notification later on.
-        int notifId = Integer.parseInt(enclosing.getResources().getString(R.string.id_send_text_notif));
-        mNotificationManager.notify(notifId, mBuilder.build());
+        showNotification("Text Sent!", String.format("Your delayed text to %s has been sent.", recipient.getName()), 2, enclosing);
     }
 
+    /**
+     * Create the notification to be displayed to the user when they receive a text from a starred contact
+     * @param context
+     * @param sender the sender of the text which was received by the user
+     */
     public static void createReceivedTextNotification(Context context, Contact sender) {
-        showNotification("Received Starred Contact Text!", "click to respond with a delayed text", context);
+        showNotification("Received Starred Contact Text!", "click to respond with a delayed text", 1, context);
     }
 }

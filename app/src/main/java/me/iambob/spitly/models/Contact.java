@@ -1,6 +1,11 @@
 package me.iambob.spitly.models;
 
+import android.content.Context;
+
 import java.util.Comparator;
+
+import me.iambob.spitly.database.Database;
+
 
 public class Contact {
     private String contactId;
@@ -62,5 +67,26 @@ public class Contact {
     /**-- Overrides --**/
     public String toString() {
         return this.getName();
+    }
+
+    /**-- Public Methods --**/
+    /**
+     * toggle the star on this contact on/off
+     * @return true if the star has been toggled on, false if its been turned off
+     */
+    public boolean toggleStar(Context ctx) {
+        Database db = new Database(ctx);
+        boolean isStarred = this.isStarred();
+
+        this.setStarred(!isStarred);
+
+        /* persist the star value to the db */
+        if (isStarred) {
+            db.unstarContact(this);
+        } else {
+            db.starContact(this);
+        }
+
+        return !isStarred;
     }
 }

@@ -22,6 +22,7 @@ import me.iambob.spitly.utils.ContactsUtils;
 import me.iambob.spitly.utils.MessagingUtils;
 import me.iambob.spitly.utils.GeneralUtils;
 import me.iambob.spitly.models.Contact;
+import me.iambob.spitly.adapters.ContactsAutocompleteAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -148,10 +149,8 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
             }
         });
 
-        ArrayAdapter<Contact> adapter = new ArrayAdapter<Contact>(this, R.layout.contact_autocomplete_item, loadedContacts);
         contactsAutocomplete = (AutoCompleteTextView)findViewById(R.id.contacts_autocomplete);
-
-        contactsAutocomplete.setAdapter(adapter);
+        contactsAutocomplete.setAdapter(new ContactsAutocompleteAdapter(this, R.layout.contact_autocomplete_item, loadedContacts));
         contactsAutocomplete.setOnItemSelectedListener(new ContactSelectedListener());
         contactsAutocomplete.setOnItemClickListener(new ContactSelectedListener());
     }

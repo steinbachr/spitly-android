@@ -62,6 +62,20 @@ public class Database {
     }
 
     /**
+     * update the given contact in the database with given vals. Important note: we select contacts
+     * in the database on their name rather then phone since if we have multiple numbers for a user
+     * (i.e. Eric Jaugey -> 5192932939 and 3943932323) we want to star both those numbers.
+     * @param contact the contact to update in the database
+     * @param updateVals the vals to update the contact with
+     */
+    private void updateContactInDb(Contact contact, ContentValues updateVals) {
+        SQLiteDatabase db = this.databaseHelper.getReadableDatabase();
+        String selection = DatabaseEntry.COLUMN_NAME_NAME + " LIKE ?";
+        String[] selectionArgs = { contact.getName() };
+        new UpdateTask(db, updateVals, selection, selectionArgs).execute();
+    }
+
+    /**
      * add the passed contact to the database
      * @param contact the contact to add to the database
      */
@@ -122,6 +136,26 @@ public class Database {
         return null;
     }
 
+    /**
+     * star the given contact
+     * @param contact the contact to star
+     */
+    public void starContact(Contact contact) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseEntry.COLUMN_NAME_IS_STARRED, 1);
+        this.updateContactInDb(contact, values);
+    }
+
+    /**
+     * unstar the given contact
+     * @param contact the contact to unstar
+     */
+    public void unstarContact(Contact contact) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseEntry.COLUMN_NAME_IS_STARRED, 0);
+        this.updateContactInDb(contact, values);
+    }
+
     /**-- TASKS --**/
     /**
      * The AsyncTask in charge of actually performing the insert into the DB
@@ -138,6 +172,37 @@ public class Database {
         @Override
         protected Void doInBackground(Void... noop) {
             this.db.insert(DatabaseEntry.TABLE_NAME, null, this.data);
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... progress) {
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+    }
+
+    /**
+     * The AsyncTask in charge of updating data in the database
+     */
+    class UpdateTask extends AsyncTask<Void, Void, Void> {
+        SQLiteDatabase db;
+        ContentValues data;
+        String selection;
+        String[] selectionArgs;
+
+        public UpdateTask(SQLiteDatabase db, ContentValues data, String selection, String[] selectionArgs) {
+            this.db = db;
+            this.data = data;
+            this.selection = selection;
+            this.selectionArgs = selectionArgs;
+        }
+
+        @Override
+        protected Void doInBackground(Void... noop) {
+            this.db.update(DatabaseEntry.TABLE_NAME, this.data, this.selection, this.selectionArgs);
             return null;
         }
 
