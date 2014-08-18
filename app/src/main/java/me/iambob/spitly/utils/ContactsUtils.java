@@ -41,6 +41,18 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
         this.enclosing.getLoaderManager().initLoader(0, null, this);
     }
 
+    /**-- Helpers --**/
+    /**
+     * clean the given phone number to remove spaces, dashes and other non numerics
+     * @param rawNumber the number to clean
+     */
+    private String cleanNumber(String rawNumber) {
+        if (rawNumber != null) {
+            return rawNumber.replaceAll("[A-Za-z+() -]", "").trim();
+        } else {
+            return "";
+        }
+    }
 
     /**-- Loader Manager Overrides --**/
     @Override
@@ -59,6 +71,9 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         ArrayList<Contact> fetchedContacts = new ArrayList<Contact>();
 
+        /** DEBUG ONLY! **/
+        new Database(this.enclosing).clearDb();
+
         final int NOT_A_PHONE = 0;
         int keyIndex = cursor.getColumnIndex(Contacts.LOOKUP_KEY);
         int nameIndex = cursor.getColumnIndex(this.NAME);
@@ -69,7 +84,7 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
         while (!cursor.isAfterLast()) {
             int phoneType = cursor.getInt(phoneTypeIndex);
             if (phoneType > NOT_A_PHONE) {
-                fetchedContacts.add(new Contact(cursor.getString(keyIndex), cursor.getString(nameIndex), cursor.getString(numberIndex)));
+                fetchedContacts.add(new Contact(cursor.getString(keyIndex), cursor.getString(nameIndex), cleanNumber(cursor.getString(numberIndex))));
             }
             cursor.moveToNext();
         }

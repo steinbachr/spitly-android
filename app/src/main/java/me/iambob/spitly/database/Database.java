@@ -173,6 +173,14 @@ public class Database {
         this.updateContactInDb(contact, values);
     }
 
+    /**
+     * clear the data from all the tables in the database
+     */
+    public void clearDb() {
+        SQLiteDatabase db = this.databaseHelper.getWritableDatabase();
+        db.delete(DatabaseEntry.TABLE_NAME, null, null);
+    }
+
     /**-- TASKS --**/
     /**
      * The AsyncTask in charge of actually performing the insert into the DB
