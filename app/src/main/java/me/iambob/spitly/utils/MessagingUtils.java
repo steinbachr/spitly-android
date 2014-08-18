@@ -26,17 +26,17 @@ public class MessagingUtils {
      * @param notificationMessage the message body for the notification
      * @param notifId the notification id
      * @param context
-     * @param contact optional. If given, then we pass the contact's name as an extra in the intent
+     * @param contactName optional. If given, then we pass the contact's name as an extra in the intent
      */
-    private static void showNotification(String notificationTitle, String notificationMessage, int notifId, Context context, Contact contact) {
+    private static void showNotification(String notificationTitle, String notificationMessage, int notifId, Context context, String contactName) {
         Notification.Builder mBuilder = new Notification.Builder(context)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationMessage);
 
         Intent resultIntent = new Intent(context, SendTextActivity.class);
-        if (contact != null) {
-            resultIntent.putExtra(Contact.CONTACT_NAME, contact.getName());
+        if (contactName != null) {
+            resultIntent.putExtra(Contact.CONTACT_NAME, contactName);
         }
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
@@ -72,18 +72,18 @@ public class MessagingUtils {
 
     /**
      * Create the notification to be displayed to the user when there text has actually been sent
-     * @param enclosing the activity to be used for context
+     * @param context
      */
-    public static void createTextSentNotification(Activity enclosing, Contact recipient) {
-        showNotification("Text Sent!", String.format("Your delayed text to %s has been sent.", recipient.getName()), 2, enclosing, null);
+    public static void createTextSentNotification(Context context, String recipientName) {
+        showNotification("Text Sent!", String.format("Your delayed text to %s has been sent.", recipientName), 2, context, null);
     }
 
     /**
      * Create the notification to be displayed to the user when they receive a text from a starred contact
      * @param context
-     * @param sender the sender of the text which was received by the user
+     * @param senderName the name of the sender of the text which was received by the user
      */
-    public static void createReceivedTextNotification(Context context, Contact sender) {
-        showNotification("Received Starred Contact Text!", "click to respond with a delayed text", 1, context, sender);
+    public static void createReceivedTextNotification(Context context, String senderName) {
+        showNotification("Received Starred Contact Text!", "click to respond with a delayed text", 1, context, senderName);
     }
 }

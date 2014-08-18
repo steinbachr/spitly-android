@@ -10,6 +10,8 @@ import me.iambob.spitly.database.Database;
 public class Contact {
     /**-- Intent Keys --**/
     public static final String CONTACT_NAME = "contact name";
+    public static final String CONTACT_NUMBER = "contact number";
+    public static final String CONTACT_MESSAGE = "contact message";
 
     private String contactId;
     private boolean isStarred;

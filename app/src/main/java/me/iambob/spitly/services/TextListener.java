@@ -29,7 +29,7 @@ public class TextListener extends BroadcastReceiver {
                         Contact receivedFrom = db.getContactByNumber(msgFrom);
 
                         if (receivedFrom != null && receivedFrom.isStarred()) {
-                            MessagingUtils.createReceivedTextNotification(context, receivedFrom);
+                            MessagingUtils.createReceivedTextNotification(context, receivedFrom.getName());
                         }
                     }
                 } catch(Exception e){

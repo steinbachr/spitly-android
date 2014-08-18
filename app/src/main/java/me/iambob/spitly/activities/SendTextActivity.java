@@ -4,35 +4,34 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.widget.Adapter;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import android.os.Bundle;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.graphics.Typeface;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Context;
 
 import me.iambob.spitly.R;
 import me.iambob.spitly.utils.ContactsUtils;
 import me.iambob.spitly.utils.MessagingUtils;
 import me.iambob.spitly.utils.GeneralUtils;
 import me.iambob.spitly.models.Contact;
+import me.iambob.spitly.services.SendDelayedText;
 import me.iambob.spitly.adapters.ContactsAutocompleteAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
-import static java.util.concurrent.TimeUnit.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /** when the user chooses 'close' after sending a text, we actually want to finish the entire application */
@@ -45,7 +44,6 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
     Contact selectedContact;
     int selectedTime;
     String selectedTimeType;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     AutoCompleteTextView contactsAutocomplete;
 
@@ -62,18 +60,7 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
      * send out the message typed by the user after the chosen delay period
      * @param message the message to send after the chosen delay
      */
-    private void sendMessageAfterDelay(final String message) {
-        final Activity enclosing = this;
-
-        final Runnable sendText = new Runnable() {
-            public void run() {
-                boolean messageSent = MessagingUtils.sendMessage(selectedContact.getNumber(), message);
-                if (messageSent) {
-                    MessagingUtils.createTextSentNotification(enclosing, selectedContact);
-                }
-            }
-        };
-
+    private void sendMessageAfterDelay(String message) {
         if (selectedContact == null) {
             String autocompleteText = contactsAutocomplete.getText().toString();
 
@@ -95,10 +82,20 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
         } else {
             timeUnit = TimeUnit.HOURS;
         }
-        scheduler.schedule(sendText, selectedTime, timeUnit);
+
+        Intent textIntent = new Intent(this, SendDelayedText.class);
+        textIntent.putExtra(Contact.CONTACT_NAME, selectedContact.getName());
+        textIntent.putExtra(Contact.CONTACT_NUMBER, selectedContact.getNumber());
+        textIntent.putExtra(Contact.CONTACT_MESSAGE, message);
+
+        PendingIntent pendingTextIntent = PendingIntent.getBroadcast(this, 0, textIntent,0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, GeneralUtils.getFutureTimeInMilliseconds(timeUnit, selectedTime), pendingTextIntent);
 
         Toast.makeText(this, String.format("Text will go out in T-minus %d %s", selectedTime, selectedTimeType), Toast.LENGTH_LONG).show();
         this.showChooseNextActionDialog();
+
+        System.out.println(String.format("***text scheduled at %s***", new Date().toString()));
     }
 
     private void createSpinners() {
