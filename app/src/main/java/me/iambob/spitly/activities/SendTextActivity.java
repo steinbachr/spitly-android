@@ -17,11 +17,9 @@ import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Context;
 
 import me.iambob.spitly.R;
 import me.iambob.spitly.utils.ContactsUtils;
-import me.iambob.spitly.utils.MessagingUtils;
 import me.iambob.spitly.utils.GeneralUtils;
 import me.iambob.spitly.models.Contact;
 import me.iambob.spitly.services.SendDelayedText;

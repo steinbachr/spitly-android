@@ -72,7 +72,7 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
         ArrayList<Contact> fetchedContacts = new ArrayList<Contact>();
 
         /** DEBUG ONLY! **/
-        new Database(this.enclosing).clearDb();
+//        new Database(this.enclosing).clearDb();
 
         final int NOT_A_PHONE = 0;
         int keyIndex = cursor.getColumnIndex(Contacts.LOOKUP_KEY);
@@ -89,8 +89,8 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
             cursor.moveToNext();
         }
 
-        this.enclosing.onContactsLoaded(fetchedContacts);
         new Database(this.enclosing).processContacts(fetchedContacts);
+        this.enclosing.onContactsLoaded(fetchedContacts);
     }
 
     @Override

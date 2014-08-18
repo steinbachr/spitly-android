@@ -32,12 +32,19 @@ public class ContactsAutocompleteAdapter extends ArrayAdapter<Contact> {
         }
 
         Contact contact = this.getItem(position);
+
         holder.contactNameTv = (TextView)convertView.findViewById(R.id.contactName);
         holder.contactNameTv.setText(contact.getName());
         holder.contactNumberTv = (TextView)convertView.findViewById(R.id.contactNumber);
         holder.contactNumberTv.setText(contact.getNumber());
+
         holder.starImg = (ImageView)convertView.findViewById(R.id.starContactImg);
         holder.starImg.setOnClickListener(new StarClickListener(contact));
+        if (contact.isStarred()) {
+            holder.starImg.setImageResource(R.drawable.star_selected);
+        } else {
+            holder.starImg.setImageResource(R.drawable.star_unselected);
+        }
 
         return convertView;
     }
