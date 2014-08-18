@@ -49,7 +49,7 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
                 this.enclosing,
                 Data.CONTENT_URI,
                 PROJECTION,
-                null,
+                Phone.NUMBER + " NOT LIKE '%@%'",
                 null,
                 null
         );
@@ -68,7 +68,7 @@ public class ContactsUtils implements LoaderManager.LoaderCallbacks<Cursor>{
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             int phoneType = cursor.getInt(phoneTypeIndex);
-            if (phoneType != NOT_A_PHONE) {
+            if (phoneType > NOT_A_PHONE) {
                 fetchedContacts.add(new Contact(cursor.getString(keyIndex), cursor.getString(nameIndex), cursor.getString(numberIndex)));
             }
             cursor.moveToNext();
