@@ -1,12 +1,17 @@
 package me.iambob.spitly.utils;
 
+import android.content.ContentResolver;
 import android.telephony.SmsManager;
 
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.TaskStackBuilder;
+import android.database.Cursor;
+import android.net.Uri;
+
 import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.app.PendingIntent;
 
@@ -32,7 +37,8 @@ public class MessagingUtils {
         Notification.Builder mBuilder = new Notification.Builder(context)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(notificationTitle)
-                .setContentText(notificationMessage);
+                .setContentText(notificationMessage)
+                .setAutoCancel(true);
 
         Intent resultIntent = new Intent(context, SendTextActivity.class);
         if (contactName != null) {
@@ -85,5 +91,37 @@ public class MessagingUtils {
      */
     public static void createReceivedTextNotification(Context context, String senderName) {
         showNotification("Received Starred Contact Text!", "click to respond with a delayed text", 1, context, senderName);
+    }
+
+    /**
+     * Mark the text sent by the given number and having the given body as read
+     * code from answer at:
+     * http://stackoverflow.com/questions/8637271/android-how-to-mark-sms-as-read-in-onreceive
+     * @param context
+     * @param number the number of the text sender
+     * @param body the body of the text that was received
+     */
+    public static void markTextAsRead(Context context, String number, String body) {
+        Uri uri = Uri.parse("content://sms/inbox");
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(uri, null, null, null, null);
+
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                if ((cursor.getString(cursor.getColumnIndex("address")).equals(number)) && (cursor.getInt(cursor.getColumnIndex("read")) == 0)) {
+                    if (cursor.getString(cursor.getColumnIndex("body")).startsWith(body)) {
+                        String smsMessageId = cursor.getString(cursor.getColumnIndex("_id"));
+                        ContentValues values = new ContentValues();
+                        values.put("read", true);
+                        values.put("seen", true);
+                        cr.update(uri, values, "_id=?", new String[]{smsMessageId});
+                    }
+                }
+                cursor.moveToNext();
+            }
+        } catch (Exception exc) {
+            System.out.println("wasn't able to mark the text as read :(");
+        }
     }
 }

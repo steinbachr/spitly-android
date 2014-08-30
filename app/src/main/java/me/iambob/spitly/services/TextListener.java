@@ -12,7 +12,6 @@ import me.iambob.spitly.models.Contact;
 
 
 public class TextListener extends BroadcastReceiver {
-
     @Override
     public void onReceive(Context context, Intent intent) {
         if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")){
@@ -25,7 +24,9 @@ public class TextListener extends BroadcastReceiver {
                     Object[] pdus = (Object[]) bundle.get("pdus");
                     for (int i = 0 ; i < pdus.length ; i++) {
                         SmsMessage message = SmsMessage.createFromPdu((byte[])pdus[i]);
+
                         String msgFrom = message.getOriginatingAddress();
+                        String msgBody = message.getMessageBody();
                         Contact receivedFrom = db.getContactByNumber(msgFrom);
 
                         if (receivedFrom != null && receivedFrom.isStarred()) {
@@ -33,6 +34,7 @@ public class TextListener extends BroadcastReceiver {
                         }
                     }
                 } catch(Exception e){
+                    e.printStackTrace();
                 }
             }
         }

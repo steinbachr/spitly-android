@@ -60,16 +60,17 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
      */
     private void sendMessageAfterDelay(String message) {
         if (selectedContact == null) {
+            /**NOTE: This doesn't account for the case when user clicks somebody -> erases the value -> types a different person **/
             String autocompleteText = contactsAutocomplete.getText().toString();
 
             /* it's possible the user never chose a contact by clicking a contact, but rather just finished typing the contact */
             selectedContact = GeneralUtils.findContactByName(loadedContacts, autocompleteText);
 
             /* if the selected contact is still null, then show the user an error toast..mmmm error toast  */
-           if (selectedContact == null) {
+            if (selectedContact == null) {
                Toast.makeText(this, String.format("%s not found", autocompleteText), Toast.LENGTH_LONG).show();
                return;
-           }
+            }
         }
 
         TimeUnit timeUnit;
@@ -155,6 +156,7 @@ public class SendTextActivity extends WaitForContactsActivity implements ChooseN
         String targetContactName = launchIntent.getStringExtra(Contact.CONTACT_NAME);
         if (targetContactName != null) {
             contactsAutocomplete.setText(targetContactName);
+            contactsAutocomplete.dismissDropDown();
         }
     }
 
