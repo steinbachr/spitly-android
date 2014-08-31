@@ -19,6 +19,7 @@ import me.iambob.spitly.activities.SendTextActivity;
 import me.iambob.spitly.models.Contact;
 import me.iambob.spitly.R;
 
+import java.util.ArrayList;
 
 /**
  * provides methods for sending / receiving messages
@@ -68,10 +69,19 @@ public class MessagingUtils {
         SmsManager manager = SmsManager.getDefault();
 
         try {
-            /* Note: the last two params probably won't stay null */
-            manager.sendTextMessage(destinationAddr, null, message, null, null);
+            /* maximum number of characters for a single part message is 160 */
+            if (message.length() >= 160) {
+                ArrayList<String> messageParts = manager.divideMessage(message);
+                manager.sendMultipartTextMessage(destinationAddr, null, messageParts, null, null);
+            } else {
+                /* Note: the last two params probably won't stay null */
+                manager.sendTextMessage(destinationAddr, null, message, null, null);
+            }
+
             return true;
         } catch (IllegalArgumentException exc) {
+            return false;
+        } catch (NullPointerException exc) {
             return false;
         }
     }
